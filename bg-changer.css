@@ -1,0 +1,104 @@
+.step {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.highlight {
+  background-color: #c9d0fc;
+  border-color: #5566ea;
+}
+
+.step.active {
+  display: block;
+}
+
+#size-options .separator {
+  width: 100%;
+}
+
+#size-options>div {
+  display: none;
+}
+
+#size-options>div.shown {
+  display: block;
+}
+
+#tool-canvas {
+  background: white;
+  max-width: 50%;
+  max-height: 900px;
+  z-index: 1;
+  display: block;
+}
+
+#crop-preview-wrapper {
+  position: relative;
+  max-width: 500px;
+}
+
+#crop-preview {
+  overflow: hidden;
+  margin: auto;
+  width: 310px;
+  max-width: 310px;
+  height: 250px;
+  max-height: 250px;
+}
+
+.cropper-container {
+  max-width: 100%;
+}
+
+.upload-new-image {
+  margin-top: 28px;
+}
+
+.soona-resizer_platforms.active {
+  display: flex;
+}
+
+#crop-control {
+  display: none;
+}
+
+#custom-button.w--redirected-checked {
+  background-color: transparent;
+  background-image: none;
+  border: 2px solid #f0562e;
+  border-radius: 1rem;
+}
+
+#submit-email.disabled,
+.soona-resizer_next-button.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.soona-resizer_error-message {
+  display: none;
+}
+
+.soona-resizer_desktop-navigation {
+  display: none !important;
+}
+.soona-resizer_sticky-bar {
+  display: block !important;
+}
+
+@media (min-width: 728px) {
+  #crop-preview {
+    width: 450px;
+    max-width: 450px;
+  }
+
+  .soona-resizer_desktop-navigation {
+    display: block !important;
+  }
+  .soona-resizer_sticky-bar {
+    display: none !important;
+  }
+}
