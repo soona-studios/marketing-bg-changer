@@ -59,12 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const dropUploadArea = document.getElementById('drop-upload-area');
   
   fileField = form.querySelector('input[type=file]');
-  canvas = document.querySelector('canvas');
-  canvas.width = 0;
-  canvas.height = 0;
+  canvas = document.getElementById('tool-canvas');
   downloadsList = document.getElementById('downloads-list');
   
-  const ctx = canvas.getContext('2d');
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropUploadArea.addEventListener(eventName, preventDefaults, false)
@@ -100,8 +97,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   imgEl.addEventListener('load', () => {
     hideElement(dropUploadArea);
-    canvas.width = imgEl.naturalWidth;
-    canvas.height = imgEl.naturalHeight;
-    ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+    canvas.src = imgEl.src;
   });
 });
