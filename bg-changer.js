@@ -43,12 +43,14 @@ let fileField = null,
   canvas = null,
   auth_token = null
 
-function setRequestHeaders(request) {
+function setRequestHeaders(request, authenticated=true) {
   request.setRequestHeader("Accept", "application/json");
   request.setRequestHeader("Content-Type", "application/json");
   request.setRequestHeader("Access-Control-Allow-Origin", "*")
-  request.setRequestHeader("X-SOONA-AUTH-PROVIDER", "soona_marketing")
-  request.setRequestHeader("X-SOONA-PROVIDER-TOKEN", auth_token)
+  if (authenticated) {
+    request.setRequestHeader("X-SOONA-AUTH-PROVIDER", "soona_marketing")
+    request.setRequestHeader("X-SOONA-PROVIDER-TOKEN", auth_token)
+  }
   return request;
 }
 
@@ -92,7 +94,7 @@ function requestMaskedImage () {
   let request = new XMLHttpRequest();
 
   request.open('POST', `${baseUrl}/api/eventing/subscribe`);
-  request = setRequestHeaders(request);
+  request = setRequestHeaders(request, false);
 
   request.onload = () => {
     if([200, 204].includes(request.status)) nextStepBtns[flowBtnType].click();
