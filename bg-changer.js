@@ -1,19 +1,98 @@
-const baseUrl = 'https://book.soona.co';
+const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
 const selectedNetworks = [];
 const flowBtnType = (window.screen.width < '720') * 1;
+const accountId = {
+  value: null,
+  set(value) {
+    this.value = value;
+    this.valueListener(value);
+  },
+  get() {
+    return this.value;
+  },
+  valueListener(value) {},
+  addValueListener: function (listener) {
+    this.valueListener = listener;
+  },
+};
 
-let selectedImageIndex = 0,
-  zip = null,
-  fileField = null,
-  canvas = null
+accountId.addValueListener(value => {
+  if (!value) return;
+  else {
+    getReservations(value);
+  }
+});
 
-const requestMaskedImage = () => {
-  const request = new XMLHttpRequest();
+const digitalAssetId = {
+  value: null,
+  set(value) {
+    this.value = value;
+    this.valueListener(value);
+  },
+  get() {
+    return this.value;
+  },
+  valueListener(value) {},
+  addValueListener: function (listener) {
+    this.valueListener = listener;
+  },
+};
 
-  request.open('POST', `${baseUrl}/api/eventing/subscribe`);
+let fileField = null,
+  canvas = null,
+  auth_token = null
+
+function setRequestHeaders(request) {
   request.setRequestHeader("Accept", "application/json");
   request.setRequestHeader("Content-Type", "application/json");
+  request.setRequestHeader("Access-Control-Allow-Origin", "*")
+  request.setRequestHeader("X-SOONA-AUTH-PROVIDER", "soona_marketing")
+  request.setRequestHeader("X-SOONA-PROVIDER-TOKEN", auth_token)
+  return request;
+}
+
+function getReservations() {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', `${baseUrl}/api/accounts/${accountId.get()}.json`);
+  request = setRequestHeaders(request);
+  
+  request.onload = () => {
+    console.log(request.responseText);
+  };
+
+  request.send();
+}
+
+function createDigitalAsset(accountId) {
+  let request = new XMLHttpRequest();
+
+  request.open('POST', `${baseUrl}/api/digital-assets`);
+  request = setRequestHeaders(request);
+
+  request.onload = () => {
+    if (request.status >= 200 && request.status < 400) {
+      const response = JSON.parse(request.responseText);
+      digitalAssetId.set(response.id);
+    } else {
+      console.log('error');
+    }
+  };
+
+  request.send(JSON.stringify({
+    accountId: accountId,
+    name: 'test',
+    description: 'test',
+    type: 'image',
+  }));
+}
+
+function requestMaskedImage () {
+  let request = new XMLHttpRequest();
+
+  request.open('POST', `${baseUrl}/api/eventing/subscribe`);
+  request = setRequestHeaders(request);
 
   request.onload = () => {
     if([200, 204].includes(request.status)) nextStepBtns[flowBtnType].click();
@@ -22,6 +101,21 @@ const requestMaskedImage = () => {
     img: canvas.toDataURL(),
   }));
 };
+
+function receiveMessage(event) {
+  if (event.origin !== "http://localhost:3000") return;
+  let splitData = event.data.split(',');
+  auth_token = splitData[1].split(':')[1];
+  accountId.set(splitData[0].split(':')[1]);
+  if (!accountId.get()) return;
+}
+
+function openAuthPortal() {
+  newWindow=window.open('http://localhost:3000/#/auth-portal','google window','height=500,width=500');
+  if (window.focus) {newWindow.focus()}
+  // add event listener to receive message from auth portal
+  window.addEventListener('message', receiveMessage, false);
+}
 
 const handleDrop = () => {
   return e => {
@@ -49,16 +143,20 @@ const preventDefaults = e => {
 
 const highlight = el => () => el.classList.add('highlight');
 const unhighlight = el => () => el.classList.remove('highlight');
-
 const hideElement = el => el.classList.add('hidden');
 const showElement = el => el.classList.remove('hidden');
 
+const clickGetReservations = accountId => () => {
+  getReservations(accountId);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('form');
-  const imgEl = document.createElement('img');
+  const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
+  const testBtn = document.getElementById('test-button');
+  openAuthPortal();
   
-  fileField = form.querySelector('input[type=file]');
+  fileField = document.querySelector('input[type=file]');
   canvas = document.getElementById('tool-canvas');
   downloadsList = document.getElementById('downloads-list');
   
@@ -75,11 +173,9 @@ document.addEventListener('DOMContentLoaded', function () {
     dropUploadArea.addEventListener(eventName, unhighlight(dropUploadArea), false)
   });
 
-  dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
+  testBtn.addEventListener('click', clickGetReservations(accountId.get()));
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-  });
+  dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
 
   fileField.addEventListener('change', function () {
     if (fileField.value == '') { return; }
@@ -97,6 +193,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   imgEl.addEventListener('load', () => {
     hideElement(dropUploadArea);
-    canvas.src = imgEl.src;
   });
 });
