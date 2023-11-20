@@ -40,7 +40,6 @@ const digitalAssetId = {
 };
 
 let fileField = null,
-  canvas = null,
   auth_token = null
 
 function setRequestHeaders(request, authenticated=true) {
@@ -145,8 +144,8 @@ const preventDefaults = e => {
 
 const highlight = el => () => el.classList.add('highlight');
 const unhighlight = el => () => el.classList.remove('highlight');
-const hideElement = el => el.classList.add('hidden');
-const showElement = el => el.classList.remove('hidden');
+const hideElement = el => el.classList.add('hide');
+const showElement = el => el.classList.remove('hide');
 
 const clickGetReservations = accountId => () => {
   getReservations(accountId);
@@ -155,11 +154,11 @@ const clickGetReservations = accountId => () => {
 document.addEventListener('DOMContentLoaded', function () {
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
-  const testBtn = document.getElementById('test-button');
+  const imgElWrapper = document.getElementById('entry-point-image-wrapper');
+  //const testBtn = document.getElementById('test-button');
   openAuthPortal();
   
   fileField = document.querySelector('input[type=file]');
-  canvas = document.getElementById('tool-canvas');
   downloadsList = document.getElementById('downloads-list');
   
 
@@ -175,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
     dropUploadArea.addEventListener(eventName, unhighlight(dropUploadArea), false)
   });
 
-  testBtn.addEventListener('click', clickGetReservations(accountId.get()));
+  //testBtn.addEventListener('click', clickGetReservations(accountId.get()));
 
   dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
 
@@ -191,9 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   reader.addEventListener('load', () => {
     imgEl.src = reader.result;
-  });
-
-  imgEl.addEventListener('load', () => {
     hideElement(dropUploadArea);
+    showElement(imgElWrapper);
   });
 });
