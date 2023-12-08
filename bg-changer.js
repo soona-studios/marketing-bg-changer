@@ -22,7 +22,7 @@ const accountId = {
 accountId.addValueListener(value => {
   if (!value) return;
   else {
-    getReservations(value);
+    createDigitalAsset(value);
   }
 });
 
@@ -57,23 +57,10 @@ function setRequestHeaders(request, authenticated=true) {
   return request;
 }
 
-function getReservations() {
-  let request = new XMLHttpRequest();
-
-  request.open('GET', `${baseUrl}/api/accounts/${accountId.get()}.json`);
-  request = setRequestHeaders(request);
-  
-  request.onload = () => {
-    console.log(request.responseText);
-  };
-
-  request.send();
-}
-
 function createDigitalAsset(accountId) {
   let request = new XMLHttpRequest();
 
-  request.open('POST', `${baseUrl}/api/digital-assets`);
+  request.open('POST', `${baseUrl}/api/accounts/${accountId}/digital-assets`);
   request = setRequestHeaders(request);
 
   request.onload = () => {
@@ -155,10 +142,6 @@ const unhighlight = el => () => el.classList.remove('highlight');
 const hideElement = el => el.classList.add('hide');
 const showElement = el => el.classList.remove('hide');
 
-const clickGetReservations = accountId => () => {
-  getReservations(accountId);
-}
-
 document.addEventListener('DOMContentLoaded', function () {
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
@@ -181,8 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
   ['dragleave', 'drop'].forEach(eventName => {
     dropUploadArea.addEventListener(eventName, unhighlight(dropUploadArea), false)
   });
-
-  //testBtn.addEventListener('click', clickGetReservations(accountId.get()));
 
   dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
 
