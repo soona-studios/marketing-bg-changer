@@ -2,6 +2,8 @@ const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
 const selectedNetworks = [];
 const flowBtnType = (window.screen.width < '720') * 1;
+
+// reactive objects
 const accountId = {
   value: null,
   set(value) {
@@ -39,9 +41,11 @@ const digitalAssetId = {
   },
 };
 
+// variables
 let fileField = null,
   auth_token = null
 
+// requests
 function setRequestHeaders(request, authenticated=true) {
   request.setRequestHeader("Accept", "application/json");
   request.setRequestHeader("Content-Type", "application/json");
@@ -103,6 +107,8 @@ function requestMaskedImage () {
   }));
 };
 
+// auth portal
+
 function receiveMessage(event) {
   if (event.origin !== "http://localhost:3000") return;
   let splitData = event.data.split(',');
@@ -118,6 +124,8 @@ function openAuthPortal() {
   window.addEventListener('message', receiveMessage, false);
 }
 
+
+// drag and drop image code
 const handleDrop = () => {
   return e => {
     const dt = e.dataTransfer;
