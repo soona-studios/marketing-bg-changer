@@ -62,6 +62,7 @@ function createDigitalAsset(accountId) {
 
   request.open('POST', `${baseUrl}/api/accounts/${accountId}/digital-assets`);
   request = setRequestHeaders(request);
+  request.withCredentials = true;
 
   request.onload = () => {
     if (request.status >= 200 && request.status < 400) {
