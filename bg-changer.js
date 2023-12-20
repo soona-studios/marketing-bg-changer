@@ -58,6 +58,7 @@ function setRequestHeaders(request, authenticated=true) {
 }
 
 function createDigitalAsset(accountId) {
+  if (!auth_token || auth_token === 'undefined' || auth_token === 'null') return;
   let request = new XMLHttpRequest();
 
   request.open('POST', `${baseUrl}/api/accounts/${accountId}/digital-assets`);
