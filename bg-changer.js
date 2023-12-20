@@ -108,7 +108,7 @@ function receiveMessage(event) {
 
 function openAuthPortal() {
   let popupWinWidth = 500;
-  let popupWinHeight = 500;
+  let popupWinHeight = 600;
   let left = (window.screen.width / 2) - (popupWinWidth / 2);
   let top = (window.screen.height / 2) - (popupWinHeight / 1.5);
   newWindow=window.open('http://localhost:3000/#/sign-in?external=true&redirect=/sign-in%3Fexternal=true','google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
