@@ -144,7 +144,6 @@ function createDirectUpload() {
       return
     }
     base64Checksum = checksum;
-    console.log(base64Checksum);
     request.send(JSON.stringify({
       blob: {
         filename: fileField.files[0].name,
