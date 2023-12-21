@@ -111,7 +111,7 @@ function openAuthPortal() {
   let popupWinHeight = 600;
   let left = (window.screen.width / 2) - (popupWinWidth / 2);
   let top = (window.screen.height / 2) - (popupWinHeight / 1.5);
-  newWindow=window.open('http://localhost:3000/#/sign-in?external=true&redirect=/sign-in%3Fexternal=true','google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
+  let newWindow=window.open('http://localhost:3000/#/sign-in?external=true&redirect=/sign-in%3Fexternal=true','google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
   if (window.focus) {newWindow.focus()}
   // add event listener to receive message from auth portal
   window.addEventListener('message', receiveMessage, false);
@@ -152,11 +152,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
-  //const testBtn = document.getElementById('test-button');
-  openAuthPortal();
+  const mainCta = document.getElementById('btn');
   
   fileField = document.querySelector('input[type=file]');
-  downloadsList = document.getElementById('downloads-list');
   
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -172,6 +170,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
+
+  mainCta.addEventListener('click', () => {
+    openAuthPortal();
+  });
 
   fileField.addEventListener('change', function () {
     if (fileField.value == '') { return; }
