@@ -138,6 +138,22 @@ function createDirectUpload() {
   let request = createAuthenticatedRequest('POST', `${baseUrl}/api/direct_uploads/create`, onload);
   if (!request) return;
   var base64Checksum = null;
+  FileChecksum.create(fileField.files[0], (error, checksum) => {
+    if (error) {
+      callback(error)
+      return
+    }
+    base64Checksum = checksum;
+    console.log(base64Checksum);
+    request.send(JSON.stringify({
+      blob: {
+        filename: fileField.files[0].name,
+        byte_size: fileField.files[0].size,
+        checksum: base64Checksum,
+        content_type: fileField.files[0].type,
+      }
+    }));
+  });
 }
 
 function createAmazonS3Image(direct_upload_blob) {
