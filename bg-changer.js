@@ -1,3 +1,4 @@
+import { FileChecksum } from "./file_checksum.js";
 const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
 const selectedNetworks = [];
@@ -20,6 +21,50 @@ const accountId = {
 };
 
 accountId.addValueListener(value => {
+  if (!value) return;
+  else {
+    createDirectUpload(value);
+  }
+});
+
+const directUploadBlob = {
+  value: null,
+  set(value) {
+    this.value = value;
+    this.valueListener(value);
+  },
+  get() {
+    return this.value;
+  },
+  valueListener(value) {},
+  addValueListener: function (listener) {
+    this.valueListener = listener;
+  },
+};
+
+directUploadBlob.addValueListener(value => {
+  if (!value) return;
+  else {
+    createAmazonS3Image(value);
+  }
+});
+
+const directUploadSignedId = {
+  value: null,
+  set(value) {
+    this.value = value;
+    this.valueListener(value);
+  },
+  get() {
+    return this.value;
+  },
+  valueListener(value) {},
+  addValueListener: function (listener) {
+    this.valueListener = listener;
+  },
+};
+
+directUploadSignedId.addValueListener(value => {
   if (!value) return;
   else {
     createDigitalAsset(value);
@@ -57,28 +102,87 @@ function setRequestHeaders(request, authenticated=true) {
   return request;
 }
 
-function createDigitalAsset(accountId) {
-  if (!auth_token || auth_token === 'undefined' || auth_token === 'null') return;
+function createAuthenticatedRequest(type, address, onload) {
+  if (!auth_token || auth_token === 'undefined' || auth_token === 'null') return false;
   let request = new XMLHttpRequest();
 
-  request.open('POST', `${baseUrl}/api/accounts/${accountId}/digital-assets`);
+  request.open(type, address);
   request = setRequestHeaders(request);
   request.withCredentials = true;
 
-  request.onload = () => {
+  if (onload) request.onload = onload;
+  else {
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 400) {
+        const response = JSON.parse(request.responseText);
+        console.log(response);
+      } else {
+        console.log('error');
+      }
+    };
+  }
+
+  return request;
+}
+
+function createDirectUpload() {
+  let onload = () => {
     if (request.status >= 200 && request.status < 400) {
       const response = JSON.parse(request.responseText);
-      digitalAssetId.set(response.id);
+      console.log(response);
+      directUploadBlob.set(response);
     } else {
       console.log('error');
     }
-  };
+  }
+  let request = createAuthenticatedRequest('POST', `${baseUrl}/api/direct_uploads/create`, onload);
+  if (!request) return;
+  var base64Checksum = null;
+}
+
+function createAmazonS3Image(direct_upload_blob) {
+  let direct_upload = direct_upload_blob.direct_upload;
+  let request = new XMLHttpRequest();
+
+  request.open('PUT', direct_upload.url, true);
+  request.responseType = 'text';
+  for (const header in direct_upload.headers) {
+    request.setRequestHeader(header, direct_upload.headers[header]);
+  }
+  request.onload = () => {
+    if (request.status >= 200 && request.status < 400) {
+      directUploadSignedId.set(direct_upload_blob.signed_id);
+    } else {
+      console.log('error');
+    }
+  }
+  request.send(fileField.files[0].slice());
+  
+}
+
+
+function createDigitalAsset(signed_id) {
+  let onload = () => {
+    if (request.status >= 200 && request.status < 400) {
+      const response = JSON.parse(request.responseText);
+      digitalAssetId.set(response.signed_id);
+    } else {
+      console.log('error');
+    }
+  }
+  let request = createAuthenticatedRequest('POST', `${baseUrl}/api/accounts/${accountId.get()}/digital_assets.json`, onload);
+  if (!request) return;
 
   request.send(JSON.stringify({
-    accountId: accountId,
-    name: 'test',
-    description: 'test',
-    type: 'image',
+    digital_asset: {
+      title: fileField.files[0].name,
+      visibility: 0,
+      origin: 1,
+      origin_source: 1,
+      ownership: 1,
+      media_type: 0,
+      file: signed_id,
+    }
   }));
 }
 
