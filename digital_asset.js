@@ -123,7 +123,6 @@ export class DigitalAsset {
   }
 
   updateStatus(value, message) {
-    console.log(message);
     this.status.value = value;
     this.status.message = message;
   }
