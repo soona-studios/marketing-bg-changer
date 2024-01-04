@@ -1,6 +1,14 @@
 import { DigitalAsset } from "./digital_asset.js";
+
+//constants
 const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
+const colors = {
+  transparent: null,
+  pink: 'rgb(255, 0, 255)',
+  blue: 'rgb(0, 0, 255)',
+  black: 'rgb(0, 0, 0)',
+};
 
 // reactive objects
 const accountId = {
@@ -30,7 +38,7 @@ accountId.addValueListener(value => {
 let fileField = null,
   authToken = null,
   digitalAsset = null,
-  selectedColor
+  selectedColor = null;
 
 // functions
 function debounce(func, timeout = 300){
@@ -39,6 +47,13 @@ function debounce(func, timeout = 300){
     clearTimeout(timer);
     timer = setTimeout(() => { func.apply(this, args); }, timeout);
   };
+}
+
+function setColorFromURL() {
+  let splitURL = window.location.href.split('/');
+  let colorName = splitURL[splitURL.length - 1];
+  colorName = colorName.split('-')[0];
+  selectedColor = colors[colorName];
 }
 
 function navigationProcess() {
@@ -64,6 +79,41 @@ function setRequestHeaders(request) {
   request.setRequestHeader("Access-Control-Allow-Origin", "*")
   return request;
 }
+
+function staticColorClickHandler(colorButton) {
+  return () => {
+    let colorName = Array.from(colorButton.classList).find(className => className.includes('is-'))?.split('-')[1];
+    if (!colorName) return;
+    selectedColor = colors[colorName];
+    return;
+  }
+}
+
+function addStyleListener(htmlElement) {
+  var observer = new MutationObserver(debounce((mutations) => {
+    mutations.forEach(function(mutationRecord) {
+        selectedColor = mutationRecord.target.style.backgroundColor;
+    });    
+  }), 1000);
+
+  observer.observe(htmlElement, { attributes : true, attributeFilter : ['style'] });
+}
+
+
+
+function parseColorButtons(colorButtons) {
+  let colorButtonsArray = Array.from(colorButtons);
+  colorButtonsArray.forEach(colorButton => {
+    if (colorButton.classList.contains('is-color-picker')) {
+      let colorSwatch = document.getElementById('colorSwatch');
+      addStyleListener(colorSwatch);
+    } else {
+      colorButton.addEventListener('click', staticColorClickHandler(colorButton));
+    }
+  });
+}
+
+  
 
 // requests
 function requestMaskedImage (base64File) {
@@ -137,7 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const dropUploadArea = document.getElementById('drop-upload-area');
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
   const mainCta = document.getElementById('btn');
-  
+  var colorButtons = document.getElementsByClassName('entry-point_color');
+
   fileField = document.querySelector('input[type=file]');
   
 
@@ -175,4 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
     hideElement(dropUploadArea);
     showElement(imgElWrapper);
   });
+
+  parseColorButtons(colorButtons);
+  setColorFromURL();
 });
