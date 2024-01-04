@@ -38,7 +38,8 @@ accountId.addValueListener(value => {
 let fileField = null,
   authToken = null,
   digitalAsset = null,
-  selectedColor = null;
+  selectedColor = null,
+  loadingSpinner = null;
 
 // functions
 function debounce(func, timeout = 300){
@@ -56,16 +57,22 @@ function setColorFromURL() {
   selectedColor = colors[colorName];
 }
 
-function navigationProcess() {
+async function navigationProcess() {
   if(!authToken || authToken === 'null' || authToken === 'undefined') return;
-  createDigitalAsset();
+  showLoadingSpinner();
+  await createDigitalAsset();
+  hideLoadingSpinner();
   //let path = createMediaEditorPath();
   //window.location.href = path;
 }
 
-function createDigitalAsset() {
-  digitalAsset = new DigitalAsset(fileField.files[0]);
-  digitalAsset.create(accountId.get(), authToken);
+async function createDigitalAsset() {
+  return new Promise(async (resolve, reject) => {
+    digitalAsset = new DigitalAsset(fileField.files[0]);
+    await digitalAsset.create(accountId.get(), authToken);
+    resolve();
+  }
+  );
 }
 
 function createMediaEditorPath() {
@@ -99,8 +106,6 @@ function addStyleListener(htmlElement) {
   observer.observe(htmlElement, { attributes : true, attributeFilter : ['style'] });
 }
 
-
-
 function parseColorButtons(colorButtons) {
   let colorButtonsArray = Array.from(colorButtons);
   colorButtonsArray.forEach(colorButton => {
@@ -113,8 +118,19 @@ function parseColorButtons(colorButtons) {
   });
 }
 
-  
+function showLoadingSpinner() {
+  if (!loadingSpinner) return;
+  loadingSpinner.style.display = 'flex';
+  loadingSpinner.style.zIndex = '1000';
+  loadingSpinner.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
+  loadingSpinner.style.width = '100%';
+}
 
+function hideLoadingSpinner() {
+  if (!loadingSpinner) return;
+  loadingSpinner.style.display = 'none';
+}
+  
 // requests
 function requestMaskedImage (base64File) {
   let request = new XMLHttpRequest();
@@ -122,7 +138,13 @@ function requestMaskedImage (base64File) {
 
   request.onload = () => {
     console.log(request.response);
+    hideLoadingSpinner();
   }
+  request.onerror = () => {
+    console.log(request.response);
+    hideLoadingSpinner();
+  }
+  showLoadingSpinner();
   request.send(JSON.stringify({
     input: {
       image_base64: base64File,
@@ -187,7 +209,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const dropUploadArea = document.getElementById('drop-upload-area');
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
   const mainCta = document.getElementById('btn');
-  var colorButtons = document.getElementsByClassName('entry-point_color');
+  const colorButtons = document.getElementsByClassName('entry-point_color');
+  loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.querySelector('input[type=file]');
   
@@ -216,7 +239,6 @@ document.addEventListener('DOMContentLoaded', function () {
       alert('Please use a valid image');
       return;
     }
-
     reader.readAsDataURL(fileField.files[0]);
   });
 
