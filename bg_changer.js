@@ -1,8 +1,6 @@
 import { DigitalAsset } from "./digital_asset.js";
 const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
-const selectedNetworks = [];
-const flowBtnType = (window.screen.width < '720') * 1;
 
 // reactive objects
 const accountId = {
@@ -30,24 +28,25 @@ accountId.addValueListener(value => {
 
 // variables
 let fileField = null,
-  auth_token = null,
-  digital_asset = null
+  authToken = null,
+  digitalAsset = null,
+  selectedColor
 
 // functions
 function navigationProcess() {
-  if(!auth_token || auth_token === 'null' || auth_token === 'undefined') return;
+  if(!authToken || authToken === 'null' || authToken === 'undefined') return;
   createDigitalAsset();
   //let path = createMediaEditorPath();
   //window.location.href = path;
 }
 
 function createDigitalAsset() {
-  digital_asset = new DigitalAsset(fileField.files[0]);
-  digital_asset.create(accountId.get(), auth_token);
+  digitalAsset = new DigitalAsset(fileField.files[0]);
+  digitalAsset.create(accountId.get(), authToken);
 }
 
 function createMediaEditorPath() {
-  let path = `${baseUrl}/media-editor?digital_asset_id=${digital_asset.digital_asset.id}`;
+  let path = `${baseUrl}/media-editor?digitalAsset_id=${digitalAsset.digitalAsset.id}`;
   return path;
 }
 
@@ -78,7 +77,7 @@ function requestMaskedImage (base64File) {
 function receiveMessage(event) {
   if (event.origin !== "http://localhost:3000") return;
   let splitData = event.data.split(',');
-  auth_token = splitData[1].split(':')[1];
+  authToken = splitData[1].split(':')[1];
   accountId.set(splitData[0].split(':')[1]);
   if (!accountId.get()) return;
 }

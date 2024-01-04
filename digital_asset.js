@@ -5,16 +5,16 @@ export class DigitalAsset {
   constructor(file) {
     this.file = file;
     this.checksum = null;
-    this.direct_upload_signed_id = null;
-    this.direct_upload_blob = null;
-    this.auth_token = null;
+    this.directUploadSignedId = null;
+    this.directUploadBlob = null;
+    this.authToken = null;
     this.status = { value: null, message: null };
     this.digital_asset = null;
   }
 
-  async create(account_id, auth_token) {
-    this.auth_token = auth_token;
-    this.account_id = account_id;
+  async create(accountId, authToken) {
+    this.authToken = authToken;
+    this.accountId = accountId;
     return this.createDirectUpload()
       .then(() => this.createAmazonS3Image())
       .then(() => this.createDigitalAsset())
@@ -28,8 +28,8 @@ export class DigitalAsset {
       let onload = (request) => {
         if (request.status >= 200 && request.status < 400) {
           const response = JSON.parse(request.responseText);
-          this.direct_upload_blob = response;
-          this.direct_upload_signed_id = response.signed_id;
+          this.directUploadBlob = response;
+          this.directUploadSignedId = response.signed_id;
           this.updateStatus('success', 'Direct upload created');
           resolve(); // Resolve the promise when direct upload is created
         } else {
@@ -47,7 +47,7 @@ export class DigitalAsset {
         let soonaRequest = new SoonaRequest(
           'POST',
           'api/direct_uploads/create',
-          this.auth_token,
+          this.authToken,
           JSON.stringify({
             blob: {
               filename: this.file.name,
@@ -77,10 +77,10 @@ export class DigitalAsset {
       };
   
       const request = new XMLHttpRequest();
-      request.open('PUT', this.direct_upload_blob.direct_upload.url);
+      request.open('PUT', this.directUploadBlob.direct_upload.url);
       
-      for (const header in this.direct_upload_blob.direct_upload.headers) {
-        request.setRequestHeader(header, this.direct_upload_blob.direct_upload.headers[header]);
+      for (const header in this.directUploadBlob.direct_upload.headers) {
+        request.setRequestHeader(header, this.directUploadBlob.direct_upload.headers[header]);
       }
   
       // Use asynchronous request and handle onload in the callback
@@ -104,8 +104,8 @@ export class DigitalAsset {
 
       let soonaRequest = new SoonaRequest(
         'POST',
-        `api/accounts/${this.account_id}/digital_assets`,
-        this.auth_token,
+        `api/accounts/${this.accountId}/digital_assets`,
+        this.authToken,
         JSON.stringify({
           digital_asset: {
             title: this.file.name,
@@ -114,7 +114,7 @@ export class DigitalAsset {
             origin_source: 1,
             ownership: 1,
             media_type: 0,
-            file: this.direct_upload_signed_id,
+            file: this.directUploadSignedId,
           },
         }),
         onload.bind(this),
