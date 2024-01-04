@@ -51,20 +51,27 @@ function createMediaEditorPath() {
   return path;
 }
 
-// requests
-function requestMaskedImage () {
-  let request = new XMLHttpRequest();
+function setRequestHeaders(request) {
+  request.setRequestHeader("Accept", "application/json");
+  request.setRequestHeader("Content-Type", "application/json");
+  request.setRequestHeader("Access-Control-Allow-Origin", "*")
+  return request;
+}
 
-  request.open('POST', `${baseUrl}/api/eventing/subscribe`);
-  request = setRequestHeaders(request, false);
+// requests
+function requestMaskedImage (base64File) {
+  let request = new XMLHttpRequest();
+  request.open('POST', `https://cv.ml.soona.dev/v2/background/remove`);
 
   request.onload = () => {
-    if([200, 204].includes(request.status)) nextStepBtns[flowBtnType].click();
+    console.log(request.response);
   }
   request.send(JSON.stringify({
-    img: canvas.toDataURL(),
+    input: {
+      image_base64: base64File,
+    }
   }));
-};
+}
 
 // auth portal
 
@@ -157,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   reader.addEventListener('load', () => {
     imgEl.src = reader.result;
+    requestMaskedImage(reader.result);
     hideElement(dropUploadArea);
     showElement(imgElWrapper);
   });
