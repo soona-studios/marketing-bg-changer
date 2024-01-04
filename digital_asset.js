@@ -56,8 +56,7 @@ export class DigitalAsset {
               content_type: this.file.type,
             },
           }),
-          onload.bind(this),
-          false
+          onload.bind(this)
         );
         await soonaRequest.send();
       });
@@ -117,8 +116,7 @@ export class DigitalAsset {
             file: this.directUploadSignedId,
           },
         }),
-        onload.bind(this),
-        false
+        onload.bind(this)
       );
       soonaRequest.send();
     });

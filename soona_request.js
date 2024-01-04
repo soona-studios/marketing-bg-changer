@@ -1,5 +1,5 @@
 export class SoonaRequest {
-  constructor(operation, url, authToken, body, onload, async=true) {
+  constructor(operation, url, authToken, body, onload) {
     this.operation = operation;
     if (url.includes('http')) this.url = url;
     else {
@@ -11,14 +11,13 @@ export class SoonaRequest {
     this.onload = onload;
     this.status = null;
     this.response = null;
-    this.async = async;
   }
 
   async send() {
     let soonaRequest = this;
     return new Promise(function (resolve, reject) {
       let request = new XMLHttpRequest();
-      request.open(soonaRequest.operation, soonaRequest.url, soonaRequest.async);
+      request.open(soonaRequest.operation, soonaRequest.url);
       request = soonaRequest.setRequestHeaders(request);
       if (soonaRequest.authToken) request.withCredentials = true;
       request.onload = () => {
