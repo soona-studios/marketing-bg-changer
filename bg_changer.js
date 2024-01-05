@@ -205,6 +205,9 @@ const hideElement = el => el.classList.add('hide');
 const showElement = el => el.classList.remove('hide');
 
 document.addEventListener('DOMContentLoaded', function () {
+  const sparkMD5Script = document.createElement('script');
+  sparkMD5Script.src = 'https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js';
+  document.head.appendChild(sparkMD5Script);
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
