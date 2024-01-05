@@ -200,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
   const mainCta = document.getElementById('btn');
   const colorButtons = document.getElementsByClassName('entry-point_color');
+  const closeButton = document.getElementsByClassName('entry-point_image-close')[0];
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.querySelector('input[type=file]');
@@ -221,6 +222,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   mainCta.addEventListener('click', () => {
     openAuthPortal();
+  });
+
+  closeButton.addEventListener('click', () => {
+    hideElement(imgElWrapper);
+    showElement(dropUploadArea);
+    fileField.value = '';
   });
 
   fileField.addEventListener('change', function () {
