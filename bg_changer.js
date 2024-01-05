@@ -59,9 +59,9 @@ function setColorFromURL() {
 
 async function navigationProcess() {
   if(!authToken || authToken === 'null' || authToken === 'undefined') return;
-  showLoadingSpinner();
+  showElement(loadingSpinner);
   await createDigitalAsset();
-  hideLoadingSpinner();
+  hideElement(loadingSpinner);
   //let path = createMediaEditorPath();
   //window.location.href = path;
 }
@@ -117,19 +117,6 @@ function parseColorButtons(colorButtons) {
     }
   });
 }
-
-function showLoadingSpinner() {
-  if (!loadingSpinner) return;
-  loadingSpinner.style.display = 'flex';
-  loadingSpinner.style.zIndex = '1000';
-  loadingSpinner.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
-  loadingSpinner.style.width = '100%';
-}
-
-function hideLoadingSpinner() {
-  if (!loadingSpinner) return;
-  loadingSpinner.style.display = 'none';
-}
   
 // requests
 function requestMaskedImage (base64File) {
@@ -138,13 +125,13 @@ function requestMaskedImage (base64File) {
 
   request.onload = () => {
     console.log(request.response);
-    hideLoadingSpinner();
+    hideElement(loadingSpinner);
   }
   request.onerror = () => {
     console.log(request.response);
-    hideLoadingSpinner();
+    hideElement(loadingSpinner);
   }
-  showLoadingSpinner();
+  showElement(loadingSpinner);
   request.send(JSON.stringify({
     input: {
       image_base64: base64File,
