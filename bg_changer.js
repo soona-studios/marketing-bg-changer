@@ -254,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   imgEl.addEventListener('load', () => {
     lowResDownloadButton.href = imgEl.src;
-    console.log(imgEl.src);
   });
 
   parseColorButtons(colorButtons);
