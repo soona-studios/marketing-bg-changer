@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.head.appendChild(sparkMD5Script);
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
+  const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
   const mainCta = document.getElementById('btn');
   const colorButtons = document.getElementsByClassName('entry-point_color');
@@ -232,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   closeButton.addEventListener('click', () => {
     hideElement(imgElWrapper);
-    showElement(dropUploadArea);
+    showElement(uploadWrapper);
     fileField.value = '';
   });
 
@@ -248,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
   reader.addEventListener('load', () => {
     imgEl.src = reader.result;
     requestMaskedImage(reader.result);
-    hideElement(dropUploadArea);
+    hideElement(uploadWrapper);
     showElement(imgElWrapper);
   });
 
