@@ -1,7 +1,7 @@
 import { DigitalAsset } from "./digital_asset.js";
 
 //constants
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'https://soona-gus.ngrok.io';
 const reader = new FileReader();
 const colors = {
   transparent: null,
@@ -118,30 +118,32 @@ function parseColorButtons(colorButtons) {
 }
   
 // requests
-function requestMaskedImage (base64File) {
-  let request = new XMLHttpRequest();
-  request.open('POST', `https://cv.ml.soona.dev/v2/background/remove`);
-
-  request.onload = () => {
-    console.log(request.response);
-    hideElement(loadingSpinner);
-  }
-  request.onerror = () => {
-    console.log(request.response);
-    hideElement(loadingSpinner);
-  }
-  showElement(loadingSpinner);
-  request.send(JSON.stringify({
+async function requestMaskedImage (base64File) {
+  let processedBase64File = base64File.split(',')[0].indexOf('base64') >= 0 ? base64File.split(',')[1] : btoa(unescape(base64File.split(',')[1]));
+  let imageRequest = {
     input: {
-      image_base64: base64File,
+        image_base64: processedBase64File
     }
-  }));
+  }; 
+  const resp = await AwsWafIntegration.fetch('https://h1shutsx84.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
+            {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "x-api-key": "7HhDS7PHvc0UfEcecVlPZ06Ps4VUcQYVLPiFptNQ"
+                },
+                body: JSON.stringify(imageRequest)
+            });
+  if (!resp) return;
+  var result = await resp.json();
+  return `data:image/png;base64,${result}`;
 }
 
 // auth portal
 
 function receiveMessage(event) {
-  if (event.origin !== "http://localhost:3000") return;
+  if (event.origin !== baseUrl) return;
   let splitData = event.data.split(',');
   authToken = splitData[1].split(':')[1];
   accountId.set(splitData[0].split(':')[1]);
@@ -153,7 +155,7 @@ function openAuthPortal() {
   let popupWinHeight = 600;
   let left = (window.screen.width / 2) - (popupWinWidth / 2);
   let top = (window.screen.height / 2) - (popupWinHeight / 1.5);
-  let newWindow=window.open('http://localhost:3000/#/sign-in?external=true&redirect=/sign-in%3Fexternal=true','google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
+  let newWindow=window.open(`${baseUrl}/#/sign-in?external=true&redirect=/sign-in%3Fexternal=true`,'google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
   if (window.focus) {newWindow.focus()}
   // add event listener to receive message from auth portal
   window.addEventListener('message', receiveMessage, false);
@@ -245,9 +247,12 @@ document.addEventListener('DOMContentLoaded', function () {
     reader.readAsDataURL(fileField.files[0]);
   });
 
-  reader.addEventListener('load', () => {
+  reader.addEventListener('load', async () => {
     imgEl.src = reader.result;
-    requestMaskedImage(reader.result);
+    showElement(loadingSpinner);
+    let maskedImage = await requestMaskedImage(reader.result);
+    imgEl.src = maskedImage;
+    hideElement(loadingSpinner);
     hideElement(uploadWrapper);
     showElement(imgElWrapper);
   });
