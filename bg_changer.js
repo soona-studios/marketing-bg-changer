@@ -201,6 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const mainCta = document.getElementById('btn');
   const colorButtons = document.getElementsByClassName('entry-point_color');
   const closeButton = document.getElementsByClassName('entry-point_image-close')[0];
+  const lowResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[0];
+  const highResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[1];
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.querySelector('input[type=file]');
@@ -224,6 +226,10 @@ document.addEventListener('DOMContentLoaded', function () {
     openAuthPortal();
   });
 
+  highResDownloadButton.addEventListener('click', () => {
+    openAuthPortal();
+  });
+
   closeButton.addEventListener('click', () => {
     hideElement(imgElWrapper);
     showElement(dropUploadArea);
@@ -244,6 +250,11 @@ document.addEventListener('DOMContentLoaded', function () {
     requestMaskedImage(reader.result);
     hideElement(dropUploadArea);
     showElement(imgElWrapper);
+  });
+
+  imgEl.addEventListener('load', () => {
+    lowResDownloadButton.href = imgEl.src;
+    console.log(imgEl.src);
   });
 
   parseColorButtons(colorButtons);
