@@ -62,8 +62,7 @@ async function navigationProcess() {
   showElement(loadingSpinner);
   await createDigitalAsset();
   hideElement(loadingSpinner);
-  //let path = createMediaEditorPath();
-  //window.location.href = path;
+  window.location.href = createMediaEditorPath();
 }
 
 async function createDigitalAsset() {
@@ -76,7 +75,7 @@ async function createDigitalAsset() {
 }
 
 function createMediaEditorPath() {
-  let path = `${baseUrl}/media-editor?digitalAsset_id=${digitalAsset.digitalAsset.id}`;
+  let path = `${baseUrl}/#/media-editor?digitalAsset_id=${digitalAsset.digitalAsset.id}`;
   return path;
 }
 

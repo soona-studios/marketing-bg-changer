@@ -9,21 +9,24 @@ export class DigitalAsset {
     this.directUploadBlob = null;
     this.authToken = null;
     this.status = { value: null, message: null };
-    this.digital_asset = null;
+    this.digitalAsset = null;
   }
 
   async create(accountId, authToken) {
-    this.authToken = authToken;
-    this.accountId = accountId;
-    return this.createDirectUpload()
-      .then(() => this.createAmazonS3Image())
-      .then(() => this.createDigitalAsset())
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      this.authToken = authToken;
+      this.accountId = accountId;
+  
+      await this.createDirectUpload();
+      await this.createAmazonS3Image();
+      await this.createDigitalAsset();
+      return this.digitalAsset;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  createDirectUpload() {
+  async createDirectUpload() {
     return new Promise((resolve, reject) => {
       let onload = (request) => {
         if (request.status >= 200 && request.status < 400) {
@@ -63,7 +66,7 @@ export class DigitalAsset {
     });
   }
 
-  createAmazonS3Image() {
+  async createAmazonS3Image() {
     return new Promise((resolve, reject) => {
       const onload = (request) => {
         if (request.status >= 200 && request.status < 400) {
@@ -89,11 +92,11 @@ export class DigitalAsset {
     });
   }
 
-  createDigitalAsset() {
+  async createDigitalAsset() {
     return new Promise((resolve, reject) => {
       let onload = (request) => {
         if (request.status >= 200 && request.status < 400) {
-          this.updateStatus('success', 'Digital asset created');
+          this.digitalAsset = JSON.parse(request.response);
           resolve(); // Resolve the promise when digital asset is created
         } else {
           this.updateStatus('error', 'Error creating digital asset');
