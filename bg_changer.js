@@ -162,8 +162,8 @@ function receiveMessage(event) {
   if (event.origin !== baseUrl) return;
   let splitData = event.data.split(',');
   authToken = splitData[1].split(':')[1];
+  if (!authToken || authToken === 'null' || authToken === 'undefined') return;
   accountId.set(splitData[0].split(':')[1]);
-  if (!accountId.get()) return;
 }
 
 function openAuthPortal() {
