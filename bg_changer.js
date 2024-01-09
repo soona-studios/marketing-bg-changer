@@ -82,7 +82,7 @@ async function createDigitalAsset() {
 }
 
 function createMediaEditorPath() {
-  let path = `${baseUrl}/#/media-editor?digitalAsset_id=${digitalAsset.digitalAsset.id}`;
+  let path = `${baseUrl}/#/account/${digitalAsset.accountId}/asset/${digitalAsset.digitalAsset.id}?album=account`;
   return path;
 }
 
