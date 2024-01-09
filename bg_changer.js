@@ -194,8 +194,11 @@ const showElement = el => el.classList.remove('hide');
 
 document.addEventListener('DOMContentLoaded', function () {
   const sparkMD5Script = document.createElement('script');
+  const awsWafIntegrationScript = document.createElement('script');
   sparkMD5Script.src = 'https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js';
+  awsWafIntegrationScript.src = "https://f56533acd8b9.us-west-1.captcha-sdk.awswaf.com/f56533acd8b9/jsapi.js";
   document.head.appendChild(sparkMD5Script);
+  document.head.appendChild(awsWafIntegrationScript);
   const imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
   const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
