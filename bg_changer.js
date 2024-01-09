@@ -1,7 +1,7 @@
 import { DigitalAsset } from "./digital_asset.js";
 
 //constants
-const baseUrl = 'https://soona-gus.ngrok.io';
+const baseUrl = 'http://localhost:3000';
 const reader = new FileReader();
 const colors = {
   transparent: null,

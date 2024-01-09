@@ -1,11 +1,9 @@
 export class SoonaRequest {
   constructor(operation, url, authToken, body, onload) {
     this.operation = operation;
-    if (url.includes('http')) this.url = url;
-    else {
-      if (window.location.href.includes('localhost')) this.url = `http://localhost:3000/${url}`;
-      else this.url = `book.soona.co/${url}`;
-    }
+    if (window.location.href.includes('local')) this.url = `http://localhost:3000/${url}`;
+    else if (url.includes('http')) this.url = url;
+    else this.url = `book.soona.co/${url}`;
     this.authToken = authToken;
     this.body = body;
     this.onload = onload;
