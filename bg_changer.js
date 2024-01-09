@@ -9,6 +9,7 @@ const colors = {
   blue: 'rgb(0, 0, 255)',
   black: 'rgb(0, 0, 0)',
 };
+const requestedImages = {};
 
 // reactive objects
 const accountId = {
@@ -119,6 +120,7 @@ function parseColorButtons(colorButtons) {
   
 // requests
 async function requestMaskedImage (base64File) {
+  if (requestedImages[base64File + selectedColor]) return requestedImages[base64File + selectedColor];
   let processedBase64File = base64File.split(',')[0].indexOf('base64') >= 0 ? base64File.split(',')[1] : btoa(unescape(base64File.split(',')[1]));
   let imageRequest = {
     input: {
@@ -137,7 +139,9 @@ async function requestMaskedImage (base64File) {
             });
   if (!resp) return;
   var result = await resp.json();
-  return `data:image/png;base64,${result}`;
+  result = `data:image/png;base64,${result}`;
+  requestedImages[base64File + selectedColor] = result;
+  return result;
 }
 
 // auth portal
