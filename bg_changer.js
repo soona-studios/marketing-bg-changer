@@ -135,6 +135,13 @@ async function requestMaskedImage (base64File) {
                     "Accept": "application/json",
                 },
                 body: JSON.stringify(imageRequest)
+            }).then((response) => {
+              if (response.status !== 200) {
+                return;
+              }
+              return response;
+            }).catch((error) => {
+              console.log(error);
             });
   if (!resp) return;
   var result = await resp.json();
@@ -257,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     imgEl.src = reader.result;
     showElement(loadingSpinner);
     let maskedImage = await requestMaskedImage(reader.result);
-    imgEl.src = maskedImage;
+    if (maskedImage) imgEl.src = maskedImage;
     hideElement(loadingSpinner);
     hideElement(uploadWrapper);
     showElement(imgElWrapper);
