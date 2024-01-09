@@ -3,7 +3,7 @@ export class SoonaRequest {
     this.operation = operation;
     if (window.location.href.includes('local')) this.url = `http://localhost:3000/${url}`;
     else if (url.includes('http')) this.url = url;
-    else this.url = `book.soona.co/${url}`;
+    else this.url = `https://book.soona.co/${url}`;
     this.authToken = authToken;
     this.body = body;
     this.onload = onload;

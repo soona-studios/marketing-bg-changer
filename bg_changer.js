@@ -1,7 +1,13 @@
 import { DigitalAsset } from "./digital_asset.js";
 
 //constants
-const baseUrl = 'http://localhost:3000';
+// change base url depending on whethere the page url includes 'local
+var baseUrl = '';
+if (window.location.href.includes('local')) {
+  baseUrl = 'http://localhost:3000';
+} else if (window.location.href.includes('soona.co')) {
+  baseUrl = 'https://book.soona.co';
+}
 const reader = new FileReader();
 const colors = {
   transparent: null,
