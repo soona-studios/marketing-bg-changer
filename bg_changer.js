@@ -228,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.querySelector('input[type=file]');
+  fileField.accept = 'image/png, image/jpeg, image/jpg';
   
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
