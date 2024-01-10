@@ -169,9 +169,10 @@ function receiveMessage(event) {
 function openAuthPortal() {
   let popupWinWidth = 500;
   let popupWinHeight = 600;
-  let left = (window.screen.width / 2) - (popupWinWidth / 2);
-  let top = (window.screen.height / 2) - (popupWinHeight / 1.5);
-  let newWindow = window.open(`${baseUrl}/#/sign-up?isExternalAuthPortal=true&redirect=/sign-in%3FisExternalAuthPortal=true`,'google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
+  let left = window.screenX + (window.outerWidth - popupWinWidth) / 2;
+  let top = window.screenY + (window.outerHeight - popupWinHeight) / 2;
+  let popUpUrl = `${baseUrl}/#/sign-up?isExternalAuthPortal=true&redirect=/sign-in%3FisExternalAuthPortal=true`;
+  let newWindow = window.open(popUpUrl,'google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
   if (window.focus) {newWindow.focus()}
   // add event listener to receive message from auth portal
   window.addEventListener('message', receiveMessage, false);
