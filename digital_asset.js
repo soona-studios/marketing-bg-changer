@@ -12,10 +12,11 @@ export class DigitalAsset {
     this.digitalAsset = null;
   }
 
-  async create(accountId, authToken) {
+  async create(accountId, authToken, env='local') {
     try {
       this.authToken = authToken;
       this.accountId = accountId;
+      this.environment = env;
   
       await this.createDirectUpload();
       await this.createAmazonS3Image();
@@ -49,7 +50,7 @@ export class DigitalAsset {
 
         let soonaRequest = new SoonaRequest(
           'POST',
-          'api/direct_uploads/create',
+          `${this.getUrlBase()}/api/direct_uploads/create`,
           this.authToken,
           JSON.stringify({
             blob: {
@@ -106,7 +107,7 @@ export class DigitalAsset {
 
       let soonaRequest = new SoonaRequest(
         'POST',
-        `api/accounts/${this.accountId}/digital_assets`,
+        `${this.getUrlBase()}/api/accounts/${this.accountId}/digital_assets`,
         this.authToken,
         JSON.stringify({
           digital_asset: {
@@ -123,6 +124,15 @@ export class DigitalAsset {
       );
       soonaRequest.send();
     });
+  }
+
+  getUrlBase() {
+    if (this.urlBase) return this.urlBase;
+    if (this.environment === 'production') this.urlBase = 'https://book.soona.co';
+    else if (this.environment === 'develop') this.urlBase = 'https://develop.soona.co';
+    else if (this.environment === 'release') this.urlBase ='https://release.soona.co';
+    else this.urlBase = 'http://localhost:3000';
+    return this.urlBase;
   }
 
   updateStatus(value, message) {

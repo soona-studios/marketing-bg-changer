@@ -2,7 +2,7 @@ import { DigitalAsset } from "./digital_asset.js";
 
 //constants
 // change base url depending on whethere the page url includes 'local
-const baseUrl ='https://book.soona.co';
+const baseUrl = 'http://localhost:3000';
 
 const reader = new FileReader();
 const colors = {
@@ -71,7 +71,7 @@ async function navigationProcess() {
 async function createDigitalAsset() {
   return new Promise(async (resolve, reject) => {
     digitalAsset = new DigitalAsset(fileField.files[0]);
-    await digitalAsset.create(accountId.get(), authToken);
+    await digitalAsset.create(accountId.get(), authToken, 'local');
     resolve();
   }
   );
@@ -129,12 +129,13 @@ async function requestMaskedImage (base64File) {
         image_base64: processedBase64File
     }
   }; 
-  const resp = await AwsWafIntegration.fetch('https://6re1tbtl62.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
+  const resp = await AwsWafIntegration.fetch('https://h1shutsx84.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
             {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
+                    "x-api-key": "7HhDS7PHvc0UfEcecVlPZ06Ps4VUcQYVLPiFptNQ"
                 },
                 body: JSON.stringify(imageRequest)
             }).then((response) => {
@@ -169,7 +170,7 @@ function openAuthPortal() {
   let top = window.screenY + (window.outerHeight - popupWinHeight) / 2;
   let popUpUrl = `${baseUrl}/#/sign-up?isExternalAuthPortal=true&redirect=/sign-in%3FisExternalAuthPortal=true`;
   let newWindow = window.open(popUpUrl,'google window','width='+popupWinWidth+',height='+popupWinHeight+',top='+top+',left='+left);
-  if (window.focus) {newWindow.focus()}
+  newWindow.focus()
   // add event listener to receive message from auth portal
   window.addEventListener('message', receiveMessage, false);
 }
@@ -281,3 +282,4 @@ document.addEventListener('DOMContentLoaded', function () {
   parseColorButtons(colorButtons);
   setColorFromURL();
 });
+
