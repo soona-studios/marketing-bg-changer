@@ -39,6 +39,7 @@ accountId.addValueListener(value => {
 
 // variables
 let fileField = null,
+  imgEl = null,
   authToken = null,
   digitalAsset = null,
   selectedColor = null,
@@ -51,6 +52,18 @@ function debounce(func, timeout = 300){
     clearTimeout(timer);
     timer = setTimeout(() => { func.apply(this, args); }, timeout);
   };
+}
+
+function dataURLtoFile(dataurl, filename) {
+  var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[arr.length - 1]), 
+      n = bstr.length, 
+      u8arr = new Uint8Array(n);
+  while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, {type:mime});
 }
 
 function setColorFromURL() {
@@ -70,7 +83,8 @@ async function navigationProcess() {
 
 async function createDigitalAsset() {
   return new Promise(async (resolve, reject) => {
-    digitalAsset = new DigitalAsset(fileField.files[0]);
+    const file = dataURLtoFile(imgEl.src, fileField.files[0].name);
+    digitalAsset = new DigitalAsset(file);
     await digitalAsset.create(accountId.get(), authToken);
     resolve();
   }
@@ -212,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
   awsWafIntegrationScript.src = "https://f56533acd8b9.us-west-1.captcha-sdk.awswaf.com/f56533acd8b9/jsapi.js";
   document.head.appendChild(sparkMD5Script);
   document.head.appendChild(awsWafIntegrationScript);
-  const imgEl = document.getElementById('entry-point-image');
+  imgEl = document.getElementById('entry-point-image');
   const dropUploadArea = document.getElementById('drop-upload-area');
   const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
