@@ -1,7 +1,7 @@
 import { DigitalAsset } from "./digital_asset.js";
 
 //constants
-// change base url depending on whethere the page url includes 'local
+// change base url depending on whether the page url includes 'local
 const baseUrl = 'https://develop.soona.co';
 
 const reader = new FileReader();
