@@ -11,6 +11,7 @@ const colors = {
   blue: 'rgb(0, 0, 255)',
   black: 'rgb(0, 0, 0)',
 };
+const maxLongestSide = 1920;
 const requestedImages = {};
 
 // reactive objects
@@ -52,6 +53,27 @@ function debounce(func, timeout = 300){
     clearTimeout(timer);
     timer = setTimeout(() => { func.apply(this, args); }, timeout);
   };
+}
+
+function resize(image, maxLongestSide){
+  var canvas = document.createElement('canvas');
+  let width = image.width;
+  let height = image.height;
+  if (width > height) {
+      if (width > maxLongestSide) {
+          height *= maxLongestSide / width;
+          width = maxLongestSide;
+      }
+  } else {
+      if (height > maxLongestSide) {
+          width *= maxLongestSide / height;
+          height = maxLongestSide;
+      }
+  }
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL('image/jpg');
 }
 
 function dataURLtoFile(dataurl, filename) {
@@ -162,7 +184,7 @@ async function requestMaskedImage (base64File) {
             });
   if (!resp) return;
   var result = await resp.json();
-  result = `data:image/png;base64,${result}`;
+  result = `data:image/jpg;base64,${result}`;
   requestedImages[base64File + selectedColor] = result;
   return result;
 }
@@ -280,13 +302,17 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   reader.addEventListener('load', async () => {
-    imgEl.src = reader.result;
     showElement(loadingSpinner);
-    let maskedImage = await requestMaskedImage(reader.result);
-    if (maskedImage) imgEl.src = maskedImage;
-    hideElement(loadingSpinner);
-    hideElement(uploadWrapper);
-    showElement(imgElWrapper);
+    var originalImage = new Image();
+    originalImage.src = reader.result;
+    originalImage.onload = async function() {
+      imgEl.src = resize(originalImage, maxLongestSide);
+      let maskedImage = await requestMaskedImage(imgEl.src);
+      if (maskedImage) imgEl.src = maskedImage;
+      hideElement(loadingSpinner);
+      hideElement(uploadWrapper);
+      showElement(imgElWrapper);
+    }
   });
 
   imgEl.addEventListener('load', () => {
