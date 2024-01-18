@@ -2,7 +2,7 @@ import { DigitalAsset } from "./digital_asset.js";
 
 //constants
 // change base url depending on whethere the page url includes 'local
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'https://develop.soona.co';
 
 const reader = new FileReader();
 const colors = {
@@ -85,7 +85,7 @@ async function createDigitalAsset() {
   return new Promise(async (resolve, reject) => {
     const file = dataURLtoFile(imgEl.src, fileField.files[0].name);
     digitalAsset = new DigitalAsset(file);
-    await digitalAsset.create(accountId.get(), authToken, 'local');
+    await digitalAsset.create(accountId.get(), authToken, 'develop');
     resolve();
   }
   );
@@ -296,4 +296,3 @@ document.addEventListener('DOMContentLoaded', function () {
   parseColorButtons(colorButtons);
   setColorFromURL();
 });
-
