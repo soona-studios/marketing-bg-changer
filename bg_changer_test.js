@@ -165,13 +165,12 @@ async function requestMaskedImage (base64File) {
         image_base64: processedBase64File
     }
   }; 
-  const resp = await AwsWafIntegration.fetch('https://h1shutsx84.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
+  const resp = await AwsWafIntegration.fetch('https://6re1tbtl62.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
             {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "x-api-key": "7HhDS7PHvc0UfEcecVlPZ06Ps4VUcQYVLPiFptNQ"
                 },
                 body: JSON.stringify(imageRequest)
             }).then((response) => {
