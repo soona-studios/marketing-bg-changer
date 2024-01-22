@@ -2,7 +2,7 @@ import { DigitalAsset } from "./digital_asset.js";
 
 //constants
 // change base url depending on whether the page url includes 'local
-const baseUrl ='https://book.soona.co';
+const baseUrl = 'https://book.soona.co';
 
 const reader = new FileReader();
 const colors = {
@@ -125,7 +125,7 @@ async function createDigitalAsset() {
   return new Promise(async (resolve, reject) => {
     const file = dataURLtoFile(imgEl.src, fileField.files[0].name);
     digitalAsset = new DigitalAsset(file);
-    await digitalAsset.create(accountId.get(), authToken, 'develop');
+    await digitalAsset.create(accountId.get(), authToken, 'production');
     resolve();
   }
   );
@@ -151,7 +151,10 @@ function staticColorClickHandler(colorButton) {
     if (originalImage.src) {
       showElement(loadingSpinner);
       requestCVImage(originalImage.src).then((result) => {
-        if (result) imgEl.src = result;
+        if (result) {
+          imgEl.src = result;
+          imgEl.srcset = result;
+        }
       });
       hideElement(loadingSpinner);
     }
@@ -167,7 +170,10 @@ function addStyleListener(htmlElement) {
         if (originalImage.src) {
           showElement(loadingSpinner);
           requestCVImage(originalImage.src).then((result) => {
-            if (result) imgEl.src = result;
+            if (result) {
+              imgEl.src = result;
+              imgEl.srcset = result;
+            }
           });
           hideElement(loadingSpinner);
         }
@@ -383,7 +389,10 @@ document.addEventListener('DOMContentLoaded', function () {
       imgEl.src = resize(tempImage, maxLongestSide);
       originalImage.src = imgEl.src;
       let maskedImage = await requestCVImage(imgEl.src);
-      if (maskedImage) imgEl.src = maskedImage;
+      if (maskedImage) {
+        imgEl.src = maskedImage;
+        imgEl.srcset = maskedImage;
+      }
       hideElement(loadingSpinner);
       hideElement(uploadWrapper);
       showElement(imgElWrapper);
@@ -391,7 +400,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   imgEl.addEventListener('load', () => {
-    lowResDownloadButton.href = imgEl.src;
+    if (imgEl.srcset){
+    lowResDownloadButton.href = imgEl.srcset;
+    } else {
+      lowResDownloadButton.href = imgEl.src;
+    }
   });
 
   parseColorButtons(colorButtons);

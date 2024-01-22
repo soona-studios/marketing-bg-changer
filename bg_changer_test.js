@@ -151,7 +151,10 @@ function staticColorClickHandler(colorButton) {
     if (originalImage.src) {
       showElement(loadingSpinner);
       requestCVImage(originalImage.src).then((result) => {
-        if (result) imgEl.src = result;
+        if (result) {
+          imgEl.src = result;
+          imgEl.srcset = result;
+        }
       });
       hideElement(loadingSpinner);
     }
@@ -167,7 +170,10 @@ function addStyleListener(htmlElement) {
         if (originalImage.src) {
           showElement(loadingSpinner);
           requestCVImage(originalImage.src).then((result) => {
-            if (result) imgEl.src = result;
+            if (result) {
+              imgEl.src = result;
+              imgEl.srcset = result;
+            }
           });
           hideElement(loadingSpinner);
         }
@@ -366,12 +372,8 @@ document.addEventListener('DOMContentLoaded', function () {
     fileField.value = '';
   });
   
-  console.log(fileField);
 
   fileField.addEventListener('change', function () {
-    console.log(fileField);
-    console.log(fileField.value);
-    console.log(fileField.files[0]);
     if (fileField.value == '') { return; }
     if (!['image/jpg', 'image/jpeg', 'image/png'].includes(fileField.files[0].type)) {
       alert('Please use a valid image');
@@ -388,7 +390,10 @@ document.addEventListener('DOMContentLoaded', function () {
       imgEl.src = resize(tempImage, maxLongestSide);
       originalImage.src = imgEl.src;
       let maskedImage = await requestCVImage(imgEl.src);
-      if (maskedImage) imgEl.src = maskedImage;
+      if (maskedImage) {
+        imgEl.src = maskedImage;
+        imgEl.srcset = maskedImage;
+      }
       hideElement(loadingSpinner);
       hideElement(uploadWrapper);
       showElement(imgElWrapper);
@@ -396,7 +401,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   imgEl.addEventListener('load', () => {
-    lowResDownloadButton.href = imgEl.src;
+    if (imgEl.srcset){
+    lowResDownloadButton.href = imgEl.srcset;
+    } else {
+      lowResDownloadButton.href = imgEl.src;
+    }
   });
 
   parseColorButtons(colorButtons);
