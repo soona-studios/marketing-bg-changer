@@ -163,9 +163,7 @@ function addStyleListener(htmlElement) {
   var observer = new MutationObserver(debounce((mutations) => {
     mutations.forEach(function(mutationRecord) {
         let selectedColorRGB = mutationRecord.target.style.backgroundColor;
-        console.log(selectedColorRGB);
         selectedColor = rgbStringToHex(selectedColorRGB);
-        console.log(selectedColor);
         if (originalImage.src) {
           showElement(loadingSpinner);
           requestCVImage(originalImage.src).then((result) => {
