@@ -7,9 +7,9 @@ const baseUrl = 'https://develop.soona.co';
 const reader = new FileReader();
 const colors = {
   transparent: null,
-  pink: 'rgb(255, 0, 255)',
-  blue: 'rgb(0, 0, 255)',
-  black: 'rgb(0, 0, 0)',
+  pink: '#f2a1fd',
+  blue: '#4b66ff',
+  black: '#000',
 };
 const maxLongestSide = 1920;
 const requestedImages = {};
@@ -41,6 +41,7 @@ accountId.addValueListener(value => {
 // variables
 let fileField = null,
   imgEl = null,
+  originalImage = new Image(),
   authToken = null,
   digitalAsset = null,
   selectedColor = null,
@@ -76,6 +77,23 @@ function resize(image, maxLongestSide){
   return canvas.toDataURL('image/jpg');
 }
 
+function rgbComponentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + rgbComponentToHex(r) + rgbComponentToHex(g) + rgbComponentToHex(b);
+}
+
+function rgbStringToHex(rgbString) {
+  let rgbArray = rgbString.split('(')[1].split(')')[0].split(',');
+  let r = parseInt(rgbArray[0]);
+  let g = parseInt(rgbArray[1]);
+  let b = parseInt(rgbArray[2]);
+  return rgbToHex(r, g, b);
+}
+
 function dataURLtoFile(dataurl, filename) {
   var arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
@@ -92,7 +110,7 @@ function setColorFromURL() {
   let splitURL = window.location.href.split('/');
   let colorName = splitURL[splitURL.length - 1];
   colorName = colorName.split('-')[0];
-  selectedColor = colors[colorName];
+  selectedColor = colors[colorName] ? colors[colorName] : colors.transparent;
 }
 
 async function navigationProcess() {
@@ -130,6 +148,13 @@ function staticColorClickHandler(colorButton) {
     let colorName = Array.from(colorButton.classList).find(className => className.includes('is-'))?.split('-')[1];
     if (!colorName) return;
     selectedColor = colors[colorName];
+    if (originalImage.src) {
+      showElement(loadingSpinner);
+      requestCVImage(originalImage.src).then((result) => {
+        if (result) imgEl.src = result;
+      });
+      hideElement(loadingSpinner);
+    }
     return;
   }
 }
@@ -137,7 +162,17 @@ function staticColorClickHandler(colorButton) {
 function addStyleListener(htmlElement) {
   var observer = new MutationObserver(debounce((mutations) => {
     mutations.forEach(function(mutationRecord) {
-        selectedColor = mutationRecord.target.style.backgroundColor;
+        let selectedColorRGB = mutationRecord.target.style.backgroundColor;
+        console.log(selectedColorRGB);
+        selectedColor = rgbStringToHex(selectedColorRGB);
+        console.log(selectedColor);
+        if (originalImage.src) {
+          showElement(loadingSpinner);
+          requestCVImage(originalImage.src).then((result) => {
+            if (result) imgEl.src = result;
+          });
+          hideElement(loadingSpinner);
+        }
     });    
   }), 1000);
 
@@ -157,12 +192,54 @@ function parseColorButtons(colorButtons) {
 }
   
 // requests
-async function requestMaskedImage (base64File) {
+async function requestCVImage (base64File) {
+  if (!base64File) return;
   if (requestedImages[base64File + selectedColor]) return requestedImages[base64File + selectedColor];
+  if (selectedColor === colors.transparent) return await requestMaskedImage(base64File);
+  else return await requestBackgroundChange(base64File, selectedColor);
+}
+
+async function requestBackgroundChange (base64File, backgroundColor) {
+  let processedBase64File = base64File.split(',')[0].indexOf('base64') >= 0 ? base64File.split(',')[1] : btoa(unescape(base64File.split(',')[1]));
+  let imageRequest = {
+    input: [
+        {
+            "asset_id": "assets/cool-dog.jpg",
+            "image_base64": processedBase64File,
+            "mode": "color_shift",
+            "hex": backgroundColor,
+        },
+    ],
+  }; 
+  const resp = await AwsWafIntegration.fetch('https://h1shutsx84.execute-api.us-west-1.amazonaws.com/cv-service/v1/media-editor/background/replace',
+            {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "x-api-key": "7HhDS7PHvc0UfEcecVlPZ06Ps4VUcQYVLPiFptNQ"
+                },
+                body: JSON.stringify(imageRequest)
+            }).then((response) => {
+              if (response.status !== 200) {
+                return;
+              }
+              return response;
+            }).catch((error) => {
+              console.log(error);
+            });
+  if (!resp) return;
+  var result = await resp.json();
+  result = `data:image/jpg;base64,${result[0]['image_base64']}`;
+  requestedImages[base64File + selectedColor] = result;
+  return result;
+}
+
+async function requestMaskedImage (base64File) {
   let processedBase64File = base64File.split(',')[0].indexOf('base64') >= 0 ? base64File.split(',')[1] : btoa(unescape(base64File.split(',')[1]));
   let imageRequest = {
     input: {
-        image_base64: processedBase64File
+      image_base64: processedBase64File
     }
   }; 
   const resp = await AwsWafIntegration.fetch('https://6re1tbtl62.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
@@ -249,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.head.appendChild(sparkMD5Script);
   document.head.appendChild(awsWafIntegrationScript);
   imgEl = document.getElementById('entry-point-image');
+  imgEl.src = null;
   const dropUploadArea = document.getElementById('drop-upload-area');
   const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
@@ -302,11 +380,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   reader.addEventListener('load', async () => {
     showElement(loadingSpinner);
-    var originalImage = new Image();
-    originalImage.src = reader.result;
-    originalImage.onload = async function() {
-      imgEl.src = resize(originalImage, maxLongestSide);
-      let maskedImage = await requestMaskedImage(imgEl.src);
+    let tempImage = new Image();
+    tempImage.src = reader.result;
+    tempImage.onload = async function() {
+      imgEl.src = resize(tempImage, maxLongestSide);
+      originalImage.src = imgEl.src;
+      let maskedImage = await requestCVImage(imgEl.src);
       if (maskedImage) imgEl.src = maskedImage;
       hideElement(loadingSpinner);
       hideElement(uploadWrapper);
