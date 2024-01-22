@@ -365,8 +365,13 @@ document.addEventListener('DOMContentLoaded', function () {
     showElement(uploadWrapper);
     fileField.value = '';
   });
+  
+  console.log(fileField);
 
   fileField.addEventListener('change', function () {
+    console.log(fileField);
+    console.log(fileField.value);
+    console.log(fileField.files[0]);
     if (fileField.value == '') { return; }
     if (!['image/jpg', 'image/jpeg', 'image/png'].includes(fileField.files[0].type)) {
       alert('Please use a valid image');
