@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const highResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[1];
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
-  fileField = document.querySelector('input[type=file]');
+  fileField = document.getElementById('entry_point_file_upload');
   fileField.accept = 'image/png, image/jpeg, image/jpg';
   
 
