@@ -343,9 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
   fileField = document.getElementById('entry_point_file_upload');
   fileField.accept = 'image/png, image/jpeg, image/jpg';
   
-  fileField.addEventListener('click', () => {
-    console.log('clicked');
-  });
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropUploadArea.addEventListener(eventName, preventDefaults, false)
