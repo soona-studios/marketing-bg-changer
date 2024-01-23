@@ -45,6 +45,7 @@ let fileField = null,
   authToken = null,
   digitalAsset = null,
   selectedColor = null,
+  selectedButton = null,
   loadingSpinner = null;
 
 // functions
@@ -157,6 +158,9 @@ function staticColorClickHandler(colorButton) {
         }
       });
       hideElement(loadingSpinner);
+      if (selectedButton) removeHighlighted(selectedButton);
+      selectedButton = colorButton;
+      addHighlighted(colorButton);
     }
     return;
   }
@@ -176,6 +180,10 @@ function addStyleListener(htmlElement) {
             }
           });
           hideElement(loadingSpinner);
+          if (selectedButton){
+            removeHighlighted(selectedButton);
+            selectedButton = null;
+          }
         }
     });    
   }), 1000);
@@ -318,6 +326,8 @@ const preventDefaults = e => {
 
 const highlight = el => () => el.classList.add('highlight');
 const unhighlight = el => () => el.classList.remove('highlight');
+const addHighlighted = el => el.classList.add('highlighted');
+const removeHighlighted = el => el.classList.remove('highlighted');
 const hideElement = el => el.classList.add('hide');
 const showElement = el => el.classList.remove('hide');
 
