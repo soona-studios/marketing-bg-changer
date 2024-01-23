@@ -333,6 +333,8 @@ const addHighlighted = el => el.classList.add('highlighted');
 const removeHighlighted = el => el.classList.remove('highlighted');
 const addHide = el => el.classList.add('hide');
 const removeHide = el => el.classList.remove('hide');
+const addIsOpen = el => el.classList.add('is-open');
+const removeIsOpen = el => el.classList.remove('is-open');
 
 document.addEventListener('DOMContentLoaded', function () {
   const sparkMD5Script = document.createElement('script');
@@ -347,10 +349,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
   const mainCta = document.getElementById('btn');
+  const editYourPhotosButton = document.getElementById('edit-your-photos-button');
   const colorButtons = document.getElementsByClassName('entry-point_color');
   const closeButton = document.getElementsByClassName('entry-point_image-close')[0];
   const lowResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[0];
   const highResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[1];
+  const modalEl = document.getElementById('modal');
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.getElementById('entry_point_file_upload');
@@ -375,7 +379,15 @@ document.addEventListener('DOMContentLoaded', function () {
     openAuthPortal();
   });
 
+  lowResDownloadButton.addEventListener('click', () => {
+    modalEl.classList.add('is-open');
+  });
+
   highResDownloadButton.addEventListener('click', () => {
+    openAuthPortal();
+  });
+
+  editYourPhotosButton.addEventListener('click', () => {
     openAuthPortal();
   });
 
