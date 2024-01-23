@@ -117,7 +117,7 @@ function setColorFromURL() {
 async function navigationProcess() {
   if(!authToken || authToken === 'null' || authToken === 'undefined') return;
   showElement(loadingSpinner);
-  await createDigitalAsset();
+  if (imgEl.src) await createDigitalAsset();
   hideElement(loadingSpinner);
   window.location.href = createMediaEditorPath();
 }
@@ -133,8 +133,11 @@ async function createDigitalAsset() {
 }
 
 function createMediaEditorPath() {
-  let path = `${baseUrl}/#/account/${digitalAsset.accountId}/asset/${digitalAsset.digitalAsset.id}?album=account`;
-  return path;
+  if (digitalAsset?.digitalAsset?.id) {
+  return `${baseUrl}/#/account/${digitalAsset.accountId}/asset/${digitalAsset.digitalAsset.id}?album=account`;
+  } else {
+    return `${baseUrl}/#/account/${accountId.get()}`;
+  }
 }
 
 function setRequestHeaders(request) {
@@ -381,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
     showElement(uploadWrapper);
     fileField.value = '';
   });
-  
+
   fileField.addEventListener('change', function () {
     if (fileField.value == '') { return; }
     if (!['image/jpg', 'image/jpeg', 'image/png'].includes(fileField.files[0].type)) {
