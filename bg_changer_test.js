@@ -230,7 +230,7 @@ async function requestBackgroundChange (base64File, backgroundColor) {
         },
     ],
   }; 
-  const resp = await AwsWafIntegration.fetch('https://6re1tbtl62.execute-api.us-west-1.amazonaws.com/cv-service/v1/media-editor/background/replace',
+  const resp = await AwsWafIntegration.fetch('https://cv-pub.ml.soona.dev/v1/media-editor/background/replace',
             {
                 method: 'POST',
                 headers: {
@@ -260,7 +260,7 @@ async function requestMaskedImage (base64File) {
       image_base64: processedBase64File
     }
   }; 
-  const resp = await AwsWafIntegration.fetch('https://6re1tbtl62.execute-api.us-west-1.amazonaws.com/cv-service/v1/background/remove',
+  const resp = await AwsWafIntegration.fetch('https://cv-pub.ml.soona.dev/v1/background/remove',
             {
                 method: 'POST',
                 headers: {
