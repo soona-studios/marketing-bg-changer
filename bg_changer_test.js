@@ -156,11 +156,11 @@ function staticColorClickHandler(colorButton) {
           imgEl.src = result;
           imgEl.srcset = result;
         }
+        hideElement(loadingSpinner);
+        if (selectedButton) removeHighlighted(selectedButton);
+        selectedButton = colorButton;
+        addHighlighted(colorButton);
       });
-      hideElement(loadingSpinner);
-      if (selectedButton) removeHighlighted(selectedButton);
-      selectedButton = colorButton;
-      addHighlighted(colorButton);
     }
     return;
   }
@@ -178,12 +178,12 @@ function addStyleListener(htmlElement) {
               imgEl.src = result;
               imgEl.srcset = result;
             }
+            hideElement(loadingSpinner);
+            if (selectedButton){
+              removeHighlighted(selectedButton);
+              selectedButton = null;
+            }
           });
-          hideElement(loadingSpinner);
-          if (selectedButton){
-            removeHighlighted(selectedButton);
-            selectedButton = null;
-          }
         }
     });    
   }), 1000);
