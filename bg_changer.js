@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const lowResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[0];
   const highResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[1];
   const modalEl = document.getElementById('modal');
+  const modalCloseButton = document.getElementById('modal-close')[0];
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.getElementById('entry_point_file_upload');
@@ -379,8 +380,12 @@ document.addEventListener('DOMContentLoaded', function () {
     openAuthPortal();
   });
 
+  modalCloseButton.addEventListener('click', () => {
+    removeIsOpen(modalEl);
+  });
+
   lowResDownloadButton.addEventListener('click', () => {
-    modalEl.classList.add('is-open');
+    addIsOpen(modalEl);
   });
 
   highResDownloadButton.addEventListener('click', () => {
