@@ -241,7 +241,7 @@ async function requestBackgroundChange (base64File, backgroundColor) {
             });
   if (!resp) return;
   var result = await resp.json();
-  result = `data:image/jpg;base64,${result[0]['image_base64']}`;
+  result = `data:image/jpg;base64,${result['assets']['image_base64']}`;
   requestedImages[base64File + selectedColor] = result;
   return result;
 }
