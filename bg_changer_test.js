@@ -219,7 +219,7 @@ async function requestBackgroundChange (base64File, backgroundColor) {
             "asset_id": "assets/cool-dog.jpg",
             "image_base64": processedBase64File,
             "mode": "color_shift",
-            "hex": backgroundColor,
+            "hex_color": backgroundColor,
         },
     ],
   }; 
