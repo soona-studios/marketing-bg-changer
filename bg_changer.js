@@ -117,13 +117,17 @@ function setColorFromURL() {
 async function navigationProcess() {
   if(!authToken || authToken === 'null' || authToken === 'undefined') return;
   removeHide(loadingSpinner);
-  if (imgEl.src) await createDigitalAsset();
+  await createDigitalAsset();
   addHide(loadingSpinner);
   window.location.href = createMediaEditorPath();
 }
 
 async function createDigitalAsset() {
   return new Promise(async (resolve, reject) => {
+    if (!fileField.files[0]){
+      resolve();
+      return;
+    }
     const file = dataURLtoFile(imgEl.src, fileField.files[0].name);
     digitalAsset = new DigitalAsset(file);
     await digitalAsset.create(accountId.get(), authToken, 'production');
