@@ -116,9 +116,9 @@ function setColorFromURL() {
 
 async function navigationProcess() {
   if(!authToken || authToken === 'null' || authToken === 'undefined') return;
-  showElement(loadingSpinner);
+  removeHide(loadingSpinner);
   if (imgEl.src) await createDigitalAsset();
-  hideElement(loadingSpinner);
+  addHide(loadingSpinner);
   window.location.href = createMediaEditorPath();
 }
 
@@ -153,13 +153,13 @@ function staticColorClickHandler(colorButton) {
     if (!colorName) return;
     selectedColor = colors[colorName];
     if (originalImage.src) {
-      showElement(loadingSpinner);
+      removeHide(loadingSpinner);
       requestCVImage(originalImage.src).then((result) => {
         if (result) {
           imgEl.src = result;
           imgEl.srcset = result;
         }
-        hideElement(loadingSpinner);
+        addHide(loadingSpinner);
         if (selectedButton) removeHighlighted(selectedButton);
         selectedButton = colorButton;
         addHighlighted(colorButton);
@@ -175,13 +175,13 @@ function addStyleListener(htmlElement) {
         let selectedColorRGB = mutationRecord.target.style.backgroundColor;
         selectedColor = rgbStringToHex(selectedColorRGB);
         if (originalImage.src) {
-          showElement(loadingSpinner);
+          removeHide(loadingSpinner);
           requestCVImage(originalImage.src).then((result) => {
             if (result) {
               imgEl.src = result;
               imgEl.srcset = result;
             }
-            hideElement(loadingSpinner);
+            addHide(loadingSpinner);
             if (selectedButton){
               removeHighlighted(selectedButton);
               selectedButton = null;
@@ -327,12 +327,12 @@ const preventDefaults = e => {
   e.stopPropagation();
 };
 
-const highlight = el => () => el.classList.add('highlight');
-const unhighlight = el => () => el.classList.remove('highlight');
+const addHighlight = el => () => el.classList.add('highlight');
+const removeHighlight = el => () => el.classList.remove('highlight');
 const addHighlighted = el => el.classList.add('highlighted');
 const removeHighlighted = el => el.classList.remove('highlighted');
-const hideElement = el => el.classList.add('hide');
-const showElement = el => el.classList.remove('hide');
+const addHide = el => el.classList.add('hide');
+const removeHide = el => el.classList.remove('hide');
 
 document.addEventListener('DOMContentLoaded', function () {
   const sparkMD5Script = document.createElement('script');
@@ -362,11 +362,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   ['dragenter', 'dragover'].forEach(eventName => {
-    dropUploadArea.addEventListener(eventName, highlight(dropUploadArea), false)
+    dropUploadArea.addEventListener(eventName, addHighlight(dropUploadArea), false)
   });
 
   ['dragleave', 'drop'].forEach(eventName => {
-    dropUploadArea.addEventListener(eventName, unhighlight(dropUploadArea), false)
+    dropUploadArea.addEventListener(eventName, removeHighlight(dropUploadArea), false)
   });
 
   dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
@@ -380,8 +380,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   closeButton.addEventListener('click', () => {
-    hideElement(imgElWrapper);
-    showElement(uploadWrapper);
+    addHide(imgElWrapper);
+    removeHide(uploadWrapper);
     fileField.value = '';
   });
 
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   reader.addEventListener('load', async () => {
-    showElement(loadingSpinner);
+    removeHide(loadingSpinner);
     let tempImage = new Image();
     tempImage.src = reader.result;
     tempImage.onload = async function() {
@@ -406,9 +406,9 @@ document.addEventListener('DOMContentLoaded', function () {
         imgEl.src = maskedImage;
         imgEl.srcset = maskedImage;
       }
-      hideElement(loadingSpinner);
-      hideElement(uploadWrapper);
-      showElement(imgElWrapper);
+      addHide(loadingSpinner);
+      addHide(uploadWrapper);
+      removeHide(imgElWrapper);
     }
   });
 
