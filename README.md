@@ -1,4 +1,4 @@
-When you pull this repository, you can test it by setting up a local python server. Navigate into the pulled directory of this repo and run `python3 -m http.server`. Then this repo is hosted at `http://localhost:8000/bg_changer.html`. You can also host this on our soona-local ngrok by runnning the python server, then visiting the directory and running `ngrok http --domain=local.soona.co 8000`.
+When you pull this repository, you can test it by setting up a local python server. Navigate into the pulled directory of this repo and run `python3 -m http.server`. Then this repo is hosted at `http://localhost:8000/bg_changer_test.html`. You can also host this on our soona-local ngrok by runnning the python server, then visiting the directory and running `ngrok http --domain=local.soona.co 8000`.
 
 Releasing New Code
 ===================
