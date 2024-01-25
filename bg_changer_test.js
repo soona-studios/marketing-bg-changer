@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const dropUploadArea = document.getElementById('drop-upload-area');
   const uploadWrapper = document.getElementsByClassName('entry-point_file-upload-content')[0];
   const imgElWrapper = document.getElementById('entry-point-image-wrapper');
-  const mainCta = document.getElementById('btn');
+  const mainCta = document.getElementById('main-edit-in-app-button');
   const editYourPhotosButton = document.getElementById('edit-your-photos-button');
   const colorButtons = document.getElementsByClassName('entry-point_color');
   const closeButton = document.getElementsByClassName('entry-point_image-close')[0];
