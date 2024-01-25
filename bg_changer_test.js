@@ -11,7 +11,7 @@ const colors = {
   blue: '#4b66ff',
   black: '#000',
 };
-const maxLongestSide = 1920;
+const maxLongestSide = 1280;
 const requestedImages = {};
 
 // reactive objects
