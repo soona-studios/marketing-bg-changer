@@ -360,6 +360,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const highResDownloadButton = document.getElementsByClassName('entry-point_dropdown-link')[1];
   const modalEl = document.getElementById('modal');
   const modalCloseButton = document.getElementById('modal-close');
+  const imageSelectToolbarEl = document.getElementsByClassName('entry-point_image-select')[0];
+  const colorSelectToolbarEl = document.getElementsByClassName('entry-point_color-select')[0];
+  const imageSelectButtons = document.getElementsByClassName('entry-point_image-select_link');
   loadingSpinner = document.getElementsByClassName('entry-point_lottie-wrap')[0];
 
   fileField = document.getElementById('entry_point_file_upload');
@@ -406,6 +409,17 @@ document.addEventListener('DOMContentLoaded', function () {
     fileField.value = '';
   });
 
+  Array.from(imageSelectButtons).forEach(button => {
+    button.addEventListener('click', async () => {
+      let blob = await fetch(button.children[0].src).then(r => r.blob());
+      const dt = new DataTransfer();
+      dt.items.add(new File([blob], 'soona-image.jpg', {type: blob.type}));
+      fileField.files = dt.files;
+      fileField.dispatchEvent(new Event('change'));
+    });
+  });
+
+
   fileField.addEventListener('change', function () {
     if (fileField.value == '') { return; }
     if (!['image/jpg', 'image/jpeg', 'image/png'].includes(fileField.files[0].type)) {
@@ -429,6 +443,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       addHide(loadingSpinner);
       addHide(uploadWrapper);
+      addHide(imageSelectToolbarEl);
+      removeHide(colorSelectToolbarEl);
       removeHide(imgElWrapper);
     }
   });
