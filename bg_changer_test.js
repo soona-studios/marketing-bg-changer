@@ -405,6 +405,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   closeButton.addEventListener('click', () => {
     addHide(imgElWrapper);
+    addHide(colorSelectToolbarEl);
+    removeHide(imageSelectToolbarEl);
     removeHide(uploadWrapper);
     fileField.value = '';
   });

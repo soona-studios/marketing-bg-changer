@@ -405,14 +405,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   closeButton.addEventListener('click', () => {
     addHide(imgElWrapper);
+    addHide(colorSelectToolbarEl);
+    removeHide(imageSelectToolbarEl);
     removeHide(uploadWrapper);
     fileField.value = '';
   });
 
   Array.from(imageSelectButtons).forEach(button => {
-    button.addEventListener('click', () => {
-      console.log(button.children[0].src);
-      fileField.value = button.children[0].src;
+    button.addEventListener('click', async () => {
+      let blob = await fetch(button.children[0].src).then(r => r.blob());
+      const dt = new DataTransfer();
+      dt.items.add(new File([blob], 'soona-image.jpg', {type: blob.type}));
+      fileField.files = dt.files;
       fileField.dispatchEvent(new Event('change'));
     });
   });
@@ -441,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       addHide(loadingSpinner);
       addHide(uploadWrapper);
-      addIsOpen(imageSelectToolbarEl);
+      addHide(imageSelectToolbarEl);
       removeHide(colorSelectToolbarEl);
       removeHide(imgElWrapper);
     }
