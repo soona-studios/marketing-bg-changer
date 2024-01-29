@@ -9,14 +9,14 @@ const colors = {
   transparent: null,
   pink: '#f2a1fd',
   blue: '#4b66ff',
-  black: '#000',
-  brown: '#c8802f',
+  black: '#000000',
+  brown: '#301a00',
   green: '#1d8c33',
   orange: '#f0562e',
   red: '#f03742',
   grey: '#989ca3',
   yellow: '#f9e061',
-  white: '#fff',
+  white: '#ffffff',
 };
 const maxLongestSide = 1280;
 const requestedImages = {};
