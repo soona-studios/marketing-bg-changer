@@ -287,7 +287,7 @@ async function requestMaskedImage (base64File) {
             });
   if (!resp) return;
   var result = await resp.json();
-  result = `data:image/jpg;base64,${result}`;
+  result = `data:image/jpg;base64,${result['assets'][0]['image_base64']}`;
   requestedImages[base64File + selectedColor] = result;
   return result;
 }
