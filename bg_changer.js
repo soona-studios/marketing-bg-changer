@@ -163,25 +163,23 @@ function getColorClassName(element) {
 }
 
 function staticColorClickHandler(colorButton) {
-  return () => {
-    let colorName = getColorClassName(colorButton);
-    if (!colorName) return;
-    selectedColor = colors[colorName];
-    if (originalImage.src) {
-      removeHide(loadingSpinner);
-      requestCVImage(originalImage.src).then((result) => {
-        if (result) {
-          imgEl.src = result;
-          imgEl.srcset = result;
-        }
-        addHide(loadingSpinner);
-        if (selectedButton) removeHighlighted(selectedButton);
-        selectedButton = colorButton;
-        addHighlighted(colorButton);
-      });
-    }
-    return;
+  let colorName = getColorClassName(colorButton);
+  if (!colorName) return;
+  selectedColor = colors[colorName];
+  if (originalImage.src) {
+    removeHide(loadingSpinner);
+    requestCVImage(originalImage.src).then((result) => {
+      if (result) {
+        imgEl.src = result;
+        imgEl.srcset = result;
+      }
+      addHide(loadingSpinner);
+      if (selectedButton) removeHighlighted(selectedButton);
+      selectedButton = colorButton;
+      addHighlighted(colorButton);
+    });
   }
+  return;
 }
 
 function addStyleListener(htmlElement) {
