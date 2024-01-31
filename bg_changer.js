@@ -214,8 +214,6 @@ function parseColorButtons(colorButtons) {
   colorButtonsArray.forEach(colorButton => {
     if (colorButton.classList.contains('is-color-picker')) {
       let colorSwatch = document.getElementById('colorSwatch');
-      let colorPickerButton = document.getElementById('w-dropdown-toggle-4');
-      colorPickerButton.addEventListener('click', linkClicked('toolbar', 'color picker', null));
       addStyleListener(colorSwatch);
     } else {
       colorButton.addEventListener('click', () => {
