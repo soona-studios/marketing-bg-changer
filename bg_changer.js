@@ -158,9 +158,13 @@ function setRequestHeaders(request) {
   return request;
 }
 
+function getColorClassName(element) {
+  return Array.from(element.classList).find(className => className.includes('is-'))?.split('-')[1];
+}
+
 function staticColorClickHandler(colorButton) {
   return () => {
-    let colorName = Array.from(colorButton.classList).find(className => className.includes('is-'))?.split('-')[1];
+    let colorName = getColorClassName(colorButton);
     if (!colorName) return;
     selectedColor = colors[colorName];
     if (originalImage.src) {
@@ -210,9 +214,15 @@ function parseColorButtons(colorButtons) {
   colorButtonsArray.forEach(colorButton => {
     if (colorButton.classList.contains('is-color-picker')) {
       let colorSwatch = document.getElementById('colorSwatch');
+      let colorPickerButton = document.getElementById('w-dropdown-toggle-4');
+      colorPickerButton.addEventListener('click', linkClicked('toolbar', 'color picker', null));
       addStyleListener(colorSwatch);
     } else {
-      colorButton.addEventListener('click', staticColorClickHandler(colorButton));
+      colorButton.addEventListener('click', () => {
+        let colorName = getColorClassName(colorButton);
+        linkClicked('toolbar', `${colorName} button`, null);
+        staticColorClickHandler(colorButton)
+      });
     }
   });
 }
@@ -290,6 +300,44 @@ async function requestMaskedImage (base64File) {
   result = `data:image/jpg;base64,${result['assets'][0]['image_base64']}`;
   requestedImages[base64File + selectedColor] = result;
   return result;
+}
+
+function getContextFromUrl() {
+  let url = window.location.href;
+  let splitUrl = url.split('/');
+  let context = splitUrl[splitUrl.length - 1];
+  context = context.replace(/[\-_]/g, ' ');
+  return context;
+}
+
+function linkClicked(subContext, linkLabel, linkHref) {
+  try {
+    analytics.track('Link Clicked',
+    {
+      context: getContextFromUrl(),
+      subContext: subContext,
+      linkLabel: linkLabel,
+      linkHref: linkHref,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function fileUploaded(subContext, fileType, fileSize, fileHeight, fileWidth) {
+  try {
+    analytics.track('File Uploaded',
+    {
+      context: getContextFromUrl(),
+      subContext: subContext,
+      fileType: fileType,
+      fileSize: fileSize,
+      fileHeight: fileHeight,
+      fileWidth: fileWidth,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // auth portal
@@ -390,9 +438,13 @@ document.addEventListener('DOMContentLoaded', function () {
     dropUploadArea.addEventListener(eventName, removeHighlight(dropUploadArea), false)
   });
 
-  dropUploadArea.addEventListener('drop', handleDrop(fileField), false);
+  dropUploadArea.addEventListener('drop', () => {
+    fileUploaded('main file uploader', fileField.files[0].type, fileField.files[0].size, imgEl.naturalHeight, imgEl.naturalWidth);
+    handleDrop(fileField);
+  }, false);
 
   mainCta.addEventListener('click', () => {
+    linkClicked('toolbar', mainCta.innerText, null);
     openAuthPortal();
   });
 
@@ -401,14 +453,17 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   lowResDownloadButton.addEventListener('click', () => {
+    linkClicked('toolbar', lowResDownloadButton.innerText, null);
     addIsOpen(modalEl);
   });
 
   highResDownloadButton.addEventListener('click', () => {
+    linkClicked('toolbar', highResDownloadButton.innerText, null);
     openAuthPortal();
   });
 
   editYourPhotosButton.addEventListener('click', () => {
+    linkClicked('modal', editYourPhotosButton.innerText, null);
     openAuthPortal();
   });
 
@@ -422,7 +477,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   Array.from(imageSelectButtons).forEach(button => {
     button.addEventListener('click', async () => {
-      let blob = await fetch(button.children[0].src).then(r => r.blob());
+      let src = button.children[0].src;
+      linkClicked('toolbar', src, null);
+      let blob = await fetch(src).then(r => r.blob());
       const dt = new DataTransfer();
       dt.items.add(new File([blob], 'soona-image.jpg', {type: blob.type}));
       fileField.files = dt.files;
@@ -433,6 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   fileField.addEventListener('change', function () {
     if (fileField.value == '') { return; }
+    fileUploaded('main file uploader', fileField.files[0].type, fileField.files[0].size, fileField.files[0].height, fileField.files[0].width);
     if (!['image/jpg', 'image/jpeg', 'image/png'].includes(fileField.files[0].type)) {
       alert('Please use a valid image');
       return;
