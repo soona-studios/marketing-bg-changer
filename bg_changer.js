@@ -145,7 +145,7 @@ async function createDigitalAsset() {
 
 function createMediaEditorPath() {
   if (digitalAsset?.digitalAsset?.id) {
-  return `${baseUrl}/#/account/${digitalAsset.accountId}/asset/${digitalAsset.digitalAsset.id}?album=account`;
+  return `${baseUrl}/#/account/${digitalAsset.accountId}/gallery/uploads/asset/${digitalAsset.digitalAsset.id}?tool=background-color`;
   } else {
     return `${baseUrl}/#/account/${accountId.get()}`;
   }
